@@ -156,9 +156,10 @@ def hdbscan_lc(choose_spec,choose_rt,h_intensity_rt,max_int_ms,rt_inv,mis_gap):
             #plt.close()	
 		
     return choose_spec_1
-def PIC(inputfile,file_t,min_intensity=200,mass_inv=1,rt_inv=50,mis_gap=3):
+def PIC(inputfile,file_t,min_intensity=200,mass_inv=1,rt_inv=15,mis_gap=3):
     #start = time.time() 
     ms,intensity,rt,rt_mean_interval=readms(inputfile)
+    rt_inv = int(rt_inv/rt_mean_interval)
     scan = len(rt)
     #print scan
     while True:
@@ -198,7 +199,7 @@ def PIC(inputfile,file_t,min_intensity=200,mass_inv=1,rt_inv=50,mis_gap=3):
     PIC('%s/%s' % (file_dir,i),os.path.splitext(os.path.basename(i))[0],500)'''
 #EIC(r'D:\data\pos\Mspos_MM48_20uM_1-B,1_01_14615.mzdata',1,50,2,'D:/1/10_50_5_2')
 #PIC('D:/HDBSCAN_code/MM48_MSS.mzML','D:/HDBSCAN_code/2',200)
-def hpic(file_in,file_out,min_intensity=250,min_snr=3):
+def hpic(file_in,file_out,min_intensity=250,min_snr=3,mass_inv=1,rt_inv=15):
     file_t = os.path.splitext(os.path.basename(file_in))[0]
     file_t = '%s/%s' % (file_out,file_t)
     try:
@@ -207,7 +208,7 @@ def hpic(file_in,file_out,min_intensity=250,min_snr=3):
         pass
     interval = PIC(file_in,file_t,min_intensity)*1.5
     return to_deque(file_t,file_out,min_snr,interval,min_intensity)
-hpic(r'D:/data/pos/Mspos_MM48_20uM_1-B,1_01_14616.mzdata','D:/5/Mspos_MM48_20uM_1-B,1_01_14616',250,3)
+#hpic(r'D:/data/pos/Mspos_MM48_20uM_1-B,1_01_14616.mzdata','D:/5/Mspos_MM48_20uM_1-B,1_01_14616',250,3)
     
       
 
