@@ -174,13 +174,6 @@ def peaks_detection(data, scales, min_snr=3,intensity=200):
             rt1_index = int(np.argmin(vec[peak_list[i,7]:peak_list[i+1,7]])+peak_list[i,7])
             peak_list[i,4],peak_list[i+1,3] = data[rt1_index,0],data[rt1_index,0] 
     return peak_list
-def lc_ms_peak(data,scales,min_snr,data_p,intensity):
-    if data_p:
-        peak_list = peaks_detection(data, scales, min_snr,intensity)
-    else:
-        data = np.loadtxt(r'%s' % data)
-        peak_list =  peaks_detection(data, scales, min_snr,intensity)
-    return  list(peak_list)
 
         
             
