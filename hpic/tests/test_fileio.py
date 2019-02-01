@@ -1,7 +1,7 @@
 import unittest
 
 """
-python -m unittest -v hpic.tests.fileio
+python -m unittest -v hpic.tests.test_fileio
 """
 class fileio_test(unittest.TestCase):
 
