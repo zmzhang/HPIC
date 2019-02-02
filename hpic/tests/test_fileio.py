@@ -27,5 +27,5 @@ class fileio_test(unittest.TestCase):
     def test_mzdata(self):
         self.assertEqual(5, 5)
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
     unittest.main()

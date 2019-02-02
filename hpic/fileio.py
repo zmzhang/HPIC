@@ -1,8 +1,8 @@
 import os
 import numpy as np
+import pyopenms
 
 def readms(input_file):#only 'mzml,mzdata or mzxml' format
-    import pyopenms
     #ms_format = re.search('\.\w+',input_file)
     ms_format= os.path.splitext(input_file)[1]
     #ms_format = ms_format.group()
