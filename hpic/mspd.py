@@ -12,6 +12,7 @@ from scipy.signal import fftconvolve
 from scipy.stats import scoreatpercentile, mode
 from collections import deque
 from math import ceil
+
 def mexican_hat(points, a):
     A = 2 / (np.sqrt(3 * a) * (np.pi ** 0.25))
     wsq = a ** 2
@@ -21,6 +22,7 @@ def mexican_hat(points, a):
     gauss = np.exp(-tsq / (2 * wsq))
     total = A * mod * gauss
     return total
+
 def cwt(data, wavelet, widths):
     output = np.zeros([len(widths), len(data)])
     for ind, width in enumerate(widths):
@@ -28,6 +30,7 @@ def cwt(data, wavelet, widths):
         output[ind, :] = fftconvolve(data, wavelet_data,
                                      mode='same')
     return output
+
 def local_extreme(data, comparator,
                   axis=0, order=1, mode='clip'):
     if (int(order) != order) or (order < 1):
@@ -42,6 +45,7 @@ def local_extreme(data, comparator,
         results &= comparator(main, plus)
         results &= comparator(main, minus)
     return results
+
 def ridge_detection(local_max, row_best, col, n_rows, n_cols, minus=True, plus=True):
     cols = deque()
     rows = deque()
@@ -84,6 +88,7 @@ def ridge_detection(local_max, row_best, col, n_rows, n_cols, minus=True, plus=T
             break
     #print rows,cols
     return rows, cols
+
 def peaks_position(vec, ridges, cwt2d, wnd=2):
     n_cols = cwt2d.shape[1]
     negs = cwt2d < 0
@@ -125,6 +130,7 @@ def peaks_position(vec, ridges, cwt2d, wnd=2):
         return list(peaks_1),ridges_refine
     else:
         return peaks,ridges_select
+
 def ridges_detection(cwt2d, vec):
     n_rows = cwt2d.shape[0]
     n_cols = cwt2d.shape[1]
@@ -144,6 +150,7 @@ def ridges_detection(cwt2d, vec):
         ):
             ridges.append(np.array([rows, cols], dtype=np.int32))
     return ridges
+
 def signal_noise_ratio(cwt2d, ridges, peaks):
     n_cols = cwt2d.shape[1]
     row_one = cwt2d[0, :]
@@ -159,19 +166,23 @@ def signal_noise_ratio(cwt2d, ridges, peaks):
         noises[ind] = scoreatpercentile(np.abs(row_one[window]), per=90)
         signals[ind] = np.max(cwt2d[ridges[ind][0, :], ridges[ind][1, :]])
     return np.abs((signals + np.finfo(float).eps) / (noises + np.finfo(float).eps)), signals
+
 def peaks_detection(data, scales, min_snr=3,intensity=200):
     vec = data[:,2]
     cwt2d = cwt(vec, mexican_hat, scales)
     ridges = ridges_detection(cwt2d, vec)
     peaks, ridges = peaks_position(vec, ridges, cwt2d)
     peak_list = np.zeros((len(peaks),9))
+    # 0->mz_apex,  1->rt_apex,  2->intensity_apex
+    # 3->rt_start, 4->rt_end,   5->intensity_cwt
+    # 6->snr_cwt,  7->peak_ind, 8->peak_length
     peak_list[:,:3],peak_list[:,3],peak_list[:,4],peak_list[:,7],peak_list[:,8]= data[peaks][:,[1,0,2]],data[0,0],data[-1,0],peaks,data.shape[0]
     peak_list[:,6], peak_list[:,5] = signal_noise_ratio(cwt2d, ridges, peaks)
     peak_list = peak_list[(peak_list[:,6]>=min_snr)&(peak_list[:,2]>=intensity)]
     if peak_list.shape[0]>1:
         peak_list=peak_list[np.argsort(peak_list[:,7])]
         for i in range(peak_list.shape[0]-1):
-            rt1_index = int(np.argmin(vec[peak_list[i,7]:peak_list[i+1,7]])+peak_list[i,7])
+            rt1_index = int(np.argmin(vec[int(peak_list[i,7]):int(peak_list[i+1,7])])+peak_list[i,7])
             peak_list[i,4],peak_list[i+1,3] = data[rt1_index,0],data[rt1_index,0] 
     return peak_list
 

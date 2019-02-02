@@ -9,7 +9,6 @@ import time,os
 import numpy as np
 import hdbscan
 from sklearn.preprocessing import minmax_scale
-from retention_time import to_deque
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
