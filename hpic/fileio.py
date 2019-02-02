@@ -35,7 +35,10 @@ def readms(input_file):#only 'mzml,mzdata or mzxml' format
             intensity.append(np.array(p_intensity)[ms_index])
             #scan+=1        
     rt1 = np.array(rt)
-    rt_mean_interval = np.mean(np.diff(rt1))
+    if rt1.shape[0] > 1:
+        rt_mean_interval = np.mean(np.diff(rt1))
+    else:
+        rt_mean_interval = 0.0
     #print  rt_mean_interval
     #rt_mean_interval = np.mean(rt1[1:]-rt1[:-1])
     #return ms,intensity,rt,scan,rt_max_interval
