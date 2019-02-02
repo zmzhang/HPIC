@@ -16,7 +16,7 @@ class fileio_test(unittest.TestCase):
         self.assertEqual(ms[0].shape[0],1313)
         self.assertEqual(intensity[0].shape[0],1313)
         self.assertEqual(len(rt),1)
-        self.assertEqual(rt_mean_interval,0.0)
+        self.assertAlmostEqual(rt_mean_interval,0.0)
 
     def test_mzml(self):
         filename = os.path.join(self.dirname, "tiny.pwiz.1.1.mzML")
@@ -32,7 +32,7 @@ class fileio_test(unittest.TestCase):
         self.assertEqual(ms[0].shape[0],1313)
         self.assertEqual(intensity[0].shape[0],1313)
         self.assertEqual(len(rt),1)
-        self.assertEqual(rt_mean_interval,0.0)
+        self.assertAlmostEqual(rt_mean_interval,0.0)
 
 
 if __name__ == '__main__':
