@@ -5,13 +5,6 @@ Created on Wed Jun 07 08:40:23 2017
 @author: Wangrong
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Thu May 11 08:18:18 2017
-
-@author: Wangrong
-"""
-
 import time,os
 import numpy as np
 import hdbscan
@@ -25,47 +18,8 @@ import shutil
 import time
 from collections import deque
 from mspd import peaks_detection 
+from fileio import readms
 
-def readms(input_file):#only 'mzml,mzdata or mzxml' format
-    #ms_format = re.search('\.\w+',input_file)
-    import pyopenms
-    ms_format= os.path.splitext(input_file)[1]
-    #ms_format = ms_format.group()
-    ms_format = ms_format.lower()
-    msdata = pyopenms.MSExperiment()
-    if ms_format == '.mzxml':
-        file =  pyopenms.MzXMLFile()
-    elif ms_format == '.mzml':
-        file =  pyopenms.MzMLFile()
-    elif ms_format =='.mzdata':
-        file =  pyopenms.MzDataFile()
-    else:
-        raise Exception('ERROR: %s is wrong format' % input_file)
-    file.load(r'%s' % input_file,msdata)
-    ms = []
-    intensity = []
-    rt = []
-    for spectrum in msdata:
-        if spectrum.getMSLevel() == 1:
-            rt.append(spectrum.getRT())
-            p_ms = []
-            p_intensity = []
-            for peak in spectrum:
-                if peak.getIntensity()!= 0:
-                    p_ms.append(peak.getMZ())
-                    p_intensity.append(peak.getIntensity())
-            #print len(p_intensity)
-            ms_index = np.argsort(-np.array(p_intensity))
-            ms.append(np.array(p_ms)[ms_index])
-            intensity.append(np.array(p_intensity)[ms_index])
-            #scan+=1        
-    rt1 = np.array(rt)
-    rt_mean_interval = np.mean(np.diff(rt1))
-    #print  rt_mean_interval
-    #rt_mean_interval = np.mean(rt1[1:]-rt1[:-1])
-    #return ms,intensity,rt,scan,rt_max_interval
-    return ms,intensity,rt,rt_mean_interval
-#返回质谱，强度，保留时间，扫描次数，以及保留时间的最大间隔，和平均的时间间隔
 def maxI(intensity):
     #print intensity[:2]
     max_i = np.array([intensity_i[0] if len(intensity_i)>0 else 0 for intensity_i in intensity])
@@ -75,6 +29,7 @@ def maxI(intensity):
     return max_intensity_rt,max_intensity_intensity
 #返回强度最大值得保留时间，以及质谱索引，和强度值
 #输入质谱，强度，保留时间，质谱宽度，保留时间宽度，以及最高强度的保留时间，和质谱索引，和扫描次数
+
 def choosedata(ms,intensity,rt,inv_ms,inv_rt,max_intensity_rt,scan):
     max_int_ms =ms[max_intensity_rt][0]
     #max_int_ms_intensity = max(max_i)
@@ -101,6 +56,7 @@ def choosedata(ms,intensity,rt,inv_ms,inv_rt,max_intensity_rt,scan):
     choose_rt = rt[start:end]
     h_intensity_rt = rt[max_intensity_rt]
     return choose_spec,choose_rt,max_int_ms,h_intensity_rt
+
 def hdbscan_lc(choose_spec,choose_rt,h_intensity_rt,max_int_ms,rt_inv,mis_gap):
     #import hdbscan
     #from sklearn.preprocessing import minmax_scale
@@ -161,6 +117,7 @@ def hdbscan_lc(choose_spec,choose_rt,h_intensity_rt,max_int_ms,rt_inv,mis_gap):
             #plt.close()	
 		
     return choose_spec_1
+
 def PIC(inputfile,file_t,min_intensity=200,mass_inv=1,rt_inv=15,mis_gap=3):
     #start = time.time() 
     ms,intensity,rt,rt_mean_interval=readms(inputfile)
