@@ -172,7 +172,6 @@ def lc_ms_peak(data,scales,min_snr,data_p,intensity):
 
 def to_deque(file_in,file_out,min_snr,rt_v,intensity):
     number = 10
-    start = time.time()
     width = np.arange(1,60)
     os.chdir(file_in)
     files = os.listdir(file_in)
