@@ -29,6 +29,11 @@ class fileio_test(unittest.TestCase):
     def test_mzdata(self):
         filename = os.path.join(self.dirname, "tiny1.mzData")
         ms,intensity,rt,rt_mean_interval = readms(filename)
+        self.assertEqual(ms[0].shape[0],1313)
+        self.assertEqual(intensity[0].shape[0],1313)
+        self.assertEqual(len(rt),1)
+        self.assertEqual(rt_mean_interval,0.0)
+
 
 if __name__ == '__main__':
     unittest.main()
