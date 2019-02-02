@@ -22,7 +22,9 @@ class fileio_test(unittest.TestCase):
         print(ms)
 
     def test_mzml(self):
-        self.assertTrue(True)
+        filename = os.path.join(self.dirname, "tiny.pwiz.1.1.mzML")
+        ms,intensity,rt,rt_mean_interval = readms(filename)
+        print(ms)
 
     def test_mzdata(self):
         self.assertEqual(5, 5)
