@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
 """
-Created on Wed Jun 07 08:40:23 2017
-
-@author: Wangrong
+Pure ion chromatograms extraction via HDBSCAN
 """
-
 import time,os,shutil,time
 import numpy as np
 import hdbscan
@@ -20,7 +16,7 @@ def maxI(intensity):
     max_intensity_intensity = max_i[max_intensity_rt]
     return max_intensity_rt,max_intensity_intensity
 
-def choosedata(ms,intensity,rt,inv_ms,inv_rt,max_intensity_rt,scan):
+def choosedata(ms, intensity, rt, inv_ms, inv_rt, max_intensity_rt, scan):
     max_int_ms =ms[max_intensity_rt][0]
     start = max_intensity_rt-inv_rt
     end = max_intensity_rt+inv_rt
@@ -39,7 +35,7 @@ def choosedata(ms,intensity,rt,inv_ms,inv_rt,max_intensity_rt,scan):
     h_intensity_rt = rt[max_intensity_rt]
     return choose_spec,choose_rt,max_int_ms,h_intensity_rt
 
-def hdbscan_lc(choose_spec,choose_rt,h_intensity_rt,max_int_ms,rt_inv,mis_gap):
+def hdbscan_lc(choose_spec, choose_rt, h_intensity_rt, max_int_ms, rt_inv, mis_gap):
     choose_spec_trans = np.zeros_like(choose_spec[:,:2])
     choose_spec_trans[:,1] = np.abs(choose_spec[:,1]-max_int_ms)
     choose_spec_trans[:,0] = choose_spec[:,0]-h_intensity_rt
@@ -87,7 +83,7 @@ def hdbscan_lc(choose_spec,choose_rt,h_intensity_rt,max_int_ms,rt_inv,mis_gap):
             choose_spec_1= choose_spec_1[choose_1_rt_index,:]
     return choose_spec_1
 
-def PIC(inputfile,file_t,min_intensity=200,mass_inv=1,rt_inv=15,mis_gap=3):
+def PIC(inputfile, file_t, min_intensity=200, mass_inv=1, rt_inv=15, mis_gap=3):
     ms,intensity,rt,rt_mean_interval=readms(inputfile)
     rt_inv = int(rt_inv/rt_mean_interval)
     scan = len(rt)
@@ -118,7 +114,7 @@ def PIC(inputfile,file_t,min_intensity=200,mass_inv=1,rt_inv=15,mis_gap=3):
     return rt_mean_interval
 
 
-def lc_ms_peak(data,scales,min_snr,data_p,intensity):
+def lc_ms_peak(data, scales, min_snr, data_p, intensity):
     if data_p:
         peak_list = peaks_detection(data, scales, min_snr,intensity)
     else:
@@ -127,7 +123,7 @@ def lc_ms_peak(data,scales,min_snr,data_p,intensity):
     return  list(peak_list)
 
 
-def to_deque(file_in,file_out,min_snr,rt_v,intensity):
+def to_deque(file_in, file_out, min_snr, rt_v, intensity):
     number = 10
     width = np.arange(1,60)
     os.chdir(file_in)
@@ -192,7 +188,38 @@ def to_deque(file_in,file_out,min_snr,rt_v,intensity):
     return peak_list
 
 
-def hpic(file_in,file_out,min_intensity=250,min_snr=3,mass_inv=1,rt_inv=15):
+def hpic(file_in, file_out, min_intensity=250, min_snr=3, mass_inv=1, rt_inv=15):
+    """
+    Extract pure ion chromatograms from LC-MS dataset
+
+    Arguments:
+        file_in: string
+            path to the dataset locally
+        file_out: string
+            folder to store the extraction result.
+        min_intensity: float
+            minimum intensity of the peak
+        min_snr: float
+            minimum signal noise ratio
+        mass_inv: float
+            minimum interval of the m/z values
+        rt_inv: float
+            minimum interval of the retention time
+
+    Returns:
+        Numpy array: shape = (n, 9).
+            n is the number of the extracted PICs, each row is a PIC
+            The meaning of each column is as following
+                # 0 -> m/z value 
+                # 1 -> retention time at apex
+                # 2 -> intensity at apex
+                # 3 -> start of retention time 
+                # 4 -> end of retention time  
+                # 5 -> intensity in CWT space
+                # 6 -> SNR in CWT space
+                # 7 -> index of the peak
+                # 8 -> length of the peak
+    """
     file_t = os.path.splitext(os.path.basename(file_in))[0]
     file_t = '%s/%s' % (file_out,file_t)
     try:

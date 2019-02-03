@@ -179,15 +179,15 @@ def peaks_detection(data, scales, min_snr=3, intensity=200):
         Numpy array: shape = (n, 9).
             n is the number of the detected peaks
             The meaning of each column is as following
-                # 0->mz_apex
-                # 1->rt_apex 
-                # 2->intensity_apex
-                # 3->rt_start
-                # 4->rt_end
-                # 5->intensity_cwt
-                # 6->snr_cwt
-                # 7->peak_ind
-                # 8->peak_length
+                # 0 -> m/z value 
+                # 1 -> retention time at apex
+                # 2 -> intensity at apex
+                # 3 -> start of retention time 
+                # 4 -> end of retention time  
+                # 5 -> intensity in CWT space
+                # 6 -> SNR in CWT space
+                # 7 -> index of the peak
+                # 8 -> length of the peak
     """
     vec = data[:,2]
     cwt2d = cwt(vec, mexican_hat, scales)
