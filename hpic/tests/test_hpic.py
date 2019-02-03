@@ -1,5 +1,7 @@
-import unittest, os, wget, tarfile
+import unittest, os, wget, tarfile, ssl
 from hpic.hpic import hpic
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 def makedir(directory):
     if not os.path.exists(directory):
@@ -17,7 +19,7 @@ class hpic_test(unittest.TestCase):
         if not(os.path.isfile(self.data_path)):
             makedir(dir_data)
             makedir(dir_result)
-            wget.download(url="http://msbi.ipb-halle.de/download/Sample-1.tar.bz2", out=dir_data)
+            wget.download(url="https://msbi.ipb-halle.de/download/Sample-1.tar.bz2", out=dir_data)
             tar = tarfile.open(tar_path, "r:bz2")
             tar.extractall(dir_data)
             tar.close()
