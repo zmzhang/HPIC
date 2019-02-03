@@ -1,17 +1,13 @@
-# -*- coding: utf-8 -*-
 """
-Created on Mon Jun 05 12:22:39 2017
-
-@author: Wangrong
+Multiscale peak detection method based on continuous wavelet transform 
 """
-
 from __future__ import division
- 
 import numpy as np
 from scipy.signal import fftconvolve
 from scipy.stats import scoreatpercentile, mode
 from collections import deque
 from math import ceil
+
 
 def mexican_hat(points, a):
     A = 2 / (np.sqrt(3 * a) * (np.pi ** 0.25))
@@ -86,7 +82,6 @@ def ridge_detection(local_max, row_best, col, n_rows, n_cols, minus=True, plus=T
                 (False == minus and True == plus and col_plus == -1) or \
                 (True == minus and True == plus and col_plus == -1 and col_minus == -1):
             break
-    #print rows,cols
     return rows, cols
 
 def peaks_position(vec, ridges, cwt2d, wnd=2):
@@ -135,7 +130,6 @@ def ridges_detection(cwt2d, vec):
     n_rows = cwt2d.shape[0]
     n_cols = cwt2d.shape[1]
     local_max = local_extreme(cwt2d, np.greater, axis=1, order=1)
-    #print local_max
     ridges = []
     rows_init = np.array(range(1, 6))
     cols_small_peaks = np.where(np.sum(local_max[rows_init, :], axis=0) > 0)[0]
@@ -167,15 +161,39 @@ def signal_noise_ratio(cwt2d, ridges, peaks):
         signals[ind] = np.max(cwt2d[ridges[ind][0, :], ridges[ind][1, :]])
     return np.abs((signals + np.finfo(float).eps) / (noises + np.finfo(float).eps)), signals
 
-def peaks_detection(data, scales, min_snr=3,intensity=200):
+def peaks_detection(data, scales, min_snr=3, intensity=200):
+    """
+    Peak detection for pure ion chromatogram of LC-MS
+
+    Arguments:
+        data: string
+            path to the dataset locally
+        scales: vector
+            1-D array of widths to use for calculating the CWT matrix. 
+        min_snr: float
+            minimum signal noise ratio.
+        intensity:
+            minimum intensity of the peak
+
+    Returns:
+        Numpy array: shape = (n, 9).
+            n is the number of the detected peaks
+            The meaning of each column is as following
+                # 0->mz_apex
+                # 1->rt_apex 
+                # 2->intensity_apex
+                # 3->rt_start
+                # 4->rt_end
+                # 5->intensity_cwt
+                # 6->snr_cwt
+                # 7->peak_ind
+                # 8->peak_length
+    """
     vec = data[:,2]
     cwt2d = cwt(vec, mexican_hat, scales)
     ridges = ridges_detection(cwt2d, vec)
     peaks, ridges = peaks_position(vec, ridges, cwt2d)
     peak_list = np.zeros((len(peaks),9))
-    # 0->mz_apex,  1->rt_apex,  2->intensity_apex
-    # 3->rt_start, 4->rt_end,   5->intensity_cwt
-    # 6->snr_cwt,  7->peak_ind, 8->peak_length
     peak_list[:,:3],peak_list[:,3],peak_list[:,4],peak_list[:,7],peak_list[:,8]= data[peaks][:,[1,0,2]],data[0,0],data[-1,0],peaks,data.shape[0]
     peak_list[:,6], peak_list[:,5] = signal_noise_ratio(cwt2d, ridges, peaks)
     peak_list = peak_list[(peak_list[:,6]>=min_snr)&(peak_list[:,2]>=intensity)]
@@ -185,11 +203,3 @@ def peaks_detection(data, scales, min_snr=3,intensity=200):
             rt1_index = int(np.argmin(vec[int(peak_list[i,7]):int(peak_list[i+1,7])])+peak_list[i,7])
             peak_list[i,4],peak_list[i+1,3] = data[rt1_index,0],data[rt1_index,0] 
     return peak_list
-
-        
-            
-            
-                
-                
-            
-

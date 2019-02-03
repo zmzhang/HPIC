@@ -12,7 +12,8 @@ def readms(file_path):
     Read mzXML, mzML and mzData files.
 
     Arguments:
-        file_path: path to the dataset locally
+        file_path: string
+            path to the dataset locally
 
     Returns:
         Tuple of Numpy arrays: (m/z, intensity, retention time, mean interval of retention time).
