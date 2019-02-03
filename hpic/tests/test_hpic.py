@@ -17,7 +17,7 @@ class hpic_test(unittest.TestCase):
         if not(os.path.isfile(self.data_path)):
             makedir(dir_data)
             makedir(dir_result)
-            wget.download(url="https://msbi.ipb-halle.de/download/Sample-1.tar.bz2", out=dir_data)
+            wget.download(url="http://msbi.ipb-halle.de/download/Sample-1.tar.bz2", out=dir_data)
             tar = tarfile.open(tar_path, "r:bz2")
             tar.extractall(dir_data)
             tar.close()
