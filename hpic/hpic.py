@@ -5,19 +5,14 @@ Created on Wed Jun 07 08:40:23 2017
 @author: Wangrong
 """
 
-import time,os
+import time,os,shutil,time
 import numpy as np
 import hdbscan
 from sklearn.preprocessing import minmax_scale
-import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
-import os
-import shutil
-import time
 from collections import deque
-from mspd import peaks_detection 
-from fileio import readms
+from .mspd import peaks_detection 
+from .fileio import readms
 
 def maxI(intensity):
     #print intensity[:2]
@@ -98,13 +93,13 @@ def hdbscan_lc(choose_spec,choose_rt,h_intensity_rt,max_int_ms,rt_inv,mis_gap):
         choose_1_rt = np.diff(choose_spec_1_rt)
         #delete the data while there are more than one point at the rentention time
         if not np.all(choose_1_rt):
-            choose_1_rt_index = range(choose_spec_1_rt.shape[0])
+            choose_1_rt_index = list(range(choose_spec_1_rt.shape[0]))
             choose_1_rt = np.where(choose_1_rt ==0)[0]
             choose_spec_1_rt_1 = choose_spec_1_rt[choose_1_rt]
             k= 0
             while k<choose_spec_1_rt_1.shape[0]:
                 p_multiple = choose_spec_1[choose_spec_1_rt==choose_spec_1_rt_1[k]]
-                p_index = range(choose_1_rt[k],choose_1_rt[k]+ p_multiple.shape[0])
+                p_index = list(range(choose_1_rt[k],choose_1_rt[k]+ p_multiple.shape[0]))
                 p_index.remove(np.argmin(np.abs(p_multiple[:,1]-max_int_ms))+choose_1_rt[k])
                 for index in p_index:
                     choose_1_rt_index.remove(index)
@@ -179,7 +174,7 @@ def to_deque(file_in,file_out,min_snr,rt_v,intensity):
     alls = []
     for each in files:
         each = map(float,each[:-4].split('_'))
-        alls.append(each)
+        alls.append(list(each))
     frame = np.array(alls)
     #print frame.shape
     files = np.array(files)[np.argsort(frame[:,0])]
@@ -280,21 +275,3 @@ def hpic(file_in,file_out,min_intensity=250,min_snr=3,mass_inv=1,rt_inv=15):
         pass
     interval = PIC(file_in,file_t,min_intensity)*1.5
     return to_deque(file_t,file_out,min_snr,interval,min_intensity)
-#hpic(r'D:/data/pos/Mspos_MM48_20uM_1-B,1_01_14616.mzdata','D:/5/Mspos_MM48_20uM_1-B,1_01_14616',250,3)
-    
-      
-
-    
-     
-
-        
-            
-
-    
-    
-    
-    
-
-
-
-
