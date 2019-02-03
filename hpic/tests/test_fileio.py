@@ -1,6 +1,3 @@
-"""
-python -m unittest -v hpic.tests.test_fileio
-"""
 import unittest, os
 from hpic.fileio import readms
 

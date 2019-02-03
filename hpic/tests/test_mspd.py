@@ -1,6 +1,3 @@
-"""
-python -m unittest -v hpic.tests.test_mspd
-"""
 import unittest
 import numpy as np
 from scipy.stats import norm

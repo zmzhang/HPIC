@@ -1,7 +1,3 @@
-"""
-python -m unittest -v hpic.tests.hpic_test
-"""
-
 import unittest, os, wget, tarfile
 from hpic.hpic import hpic
 
