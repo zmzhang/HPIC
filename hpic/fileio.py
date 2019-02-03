@@ -1,11 +1,27 @@
+"""
+Module to parse mzXML, mzML and mzData files based on pyopenms
+"""
 # pylint: disable=no-name-in-module
 import os
 import numpy as np
 from pyopenms import MSExperiment, MzXMLFile, MzMLFile, MzDataFile
 
 
-def readms(input_file):
-    ms_format = os.path.splitext(input_file)[1]
+def readms(file_path):
+    """
+    Read mzXML, mzML and mzData files.
+
+    Arguments:
+        file_path: path to the dataset locally
+
+    Returns:
+        Tuple of Numpy arrays: (m/z, intensity, retention time, mean interval of retention time).
+    
+    Examples:
+        >>> from hpic.fileio import readms
+        >>> ms,intensity,rt,rt_mean_interval = readms("MM14_20um.mzxml")
+    """
+    ms_format = os.path.splitext(file_path)[1]
     ms_format = ms_format.lower()
     msdata = MSExperiment()
     if ms_format == '.mzxml':
@@ -15,8 +31,8 @@ def readms(input_file):
     elif ms_format == '.mzdata':
         file = MzDataFile()
     else:
-        raise Exception('ERROR: %s is wrong format' % input_file)
-    file.load(r'%s' % input_file, msdata)
+        raise Exception('ERROR: %s is wrong format' % file_path)
+    file.load(r'%s' % file_path, msdata)
     m_s = []
     intensity = []
     r_t = []
