@@ -1,39 +1,28 @@
 environment:
-  global:
-    # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
-    # /E:ON and /V:ON options are not enabled in the batch script intepreter
-    # See: http://stackoverflow.com/a/13751649/163740
-    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
-
   matrix:
-
-    # Python 3.7.1
-    - PYTHON: "C:\Python37-x64"
-      PYTHON_VERSION: "3.7.1"
-      PYTHON_ARCH: "64"
+    - PYTHON: C:\Python37-x64
+      PYTHON_VERSION: 3.7
+      PYTHON_ARCH: 64
 
 
 install:
-
-  - "%CMD_IN_ENV% pip install numpy>=1.15.0"
-  - "%CMD_IN_ENV% pip install scipy>=1.2.0"
-  - "%CMD_IN_ENV% pip install scikit-learn>=0.17"
-  - "%CMD_IN_ENV% pip install pandas>=0.2.34"
-  - "%CMD_IN_ENV% pip install pyopenms>=2.4.0"
-  - "%CMD_IN_ENV% pip install hdbscan>=0.8.0"
-  - "%CMD_IN_ENV% pip install wget>=3.2"
+  - set "PATH=%PYTHON%;%PYTHON%/Scripts;%PYTHON%/Library/bin;%PATH%"
+  - set "PYTHONPATH=%PYTHONPATH%;C:/projects/hpic"
+  - python -m pip install --upgrade pip
+  - pip install numpy
+  - pip install scipy
+  - pip install scikit-learn
+  - pip install pandas
+  - pip install pyopenms
+  - pip install hdbscan
+  - pip install wget
 
 build_script:
 
-  - "%CMD_IN_ENV% python setup.py build"
+  - python setup.py build
 
 test_script:
 
-  - "%CMD_IN_ENV% python -m unittest -v"
-      
-after_test:
-
-  - "%CMD_IN_ENV% python setup.py bdist_wheel"
-  - "%CMD_IN_ENV% python setup.py bdist_wininst"
-  - "%CMD_IN_ENV% python setup.py bdist_msi"
-  - ps: "ls dist"
+  -   python C:/projects/hpic/hpic/tests/test_fileio.py
+  -   python C:/projects/hpic/hpic/tests/test_mspd.py
+  -   python C:/projects/hpic/hpic/tests/test_hpic.py
