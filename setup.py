@@ -26,6 +26,8 @@ setup(name='hpic',
       install_requires=[
 	  "numpy>=1.15.0",
 	  "scipy>=1.2.0",
+      "scikit-learn>=0.17",
+      "pandas>=0.2.34",
 	  "pyopenms>=2.4.0",
 	  "hdbscan>=0.8.0",
       "wget>=3.2"],
@@ -34,6 +36,5 @@ setup(name='hpic',
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",
         "Topic :: Scientific/Engineering :: Metabolomics",
-        "Topic :: Scientific/Engineering :: Chemistry",
-      ]
+        "Topic :: Scientific/Engineering :: Analytical Chemistry"]
 )
