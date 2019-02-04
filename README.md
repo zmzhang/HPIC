@@ -10,7 +10,7 @@ HPIC is a reliable and sensitive method to extract PIC from raw LC-MS dataset di
 
 # Install
 
-* [Anaconda Python (Python version 3.7.1)](https://repo.continuum.io/archive/Anaconda3-2018.12-Windows-x86_64.exe)
+* Install [Anaconda Python (Python version 3.7.1)](https://repo.continuum.io/archive/Anaconda3-2018.12-Windows-x86_64.exe)
 
 * Run following command in Anaconda Prompt
 
