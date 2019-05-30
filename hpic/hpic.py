@@ -126,7 +126,6 @@ def lc_ms_peak(data, scales, min_snr, data_p, intensity):
 def to_deque(file_in, file_out, min_snr, rt_v, intensity):
     number = 10
     width = np.arange(1,60)
-    os.chdir(file_in)
     files = os.listdir(file_in)
     peak_list = []
     alls = []
@@ -166,7 +165,7 @@ def to_deque(file_in, file_out, min_snr, rt_v, intensity):
                     new = np.zeros(6)
                     new[:3] = p_frame[file_sep[np.argmax(p_frame[file_sep,2])],:3]
                     index = [m+i for m in file_sep]
-                    mass = np.vstack([np.loadtxt(file_i) for file_i in list(files[index])])
+                    mass = np.vstack([np.loadtxt(file_in+"/"+file_i) for file_i in list(files[index])])
                     new[3] = mass[0,0]
                     new[4] = mass[-1,0]
                     new[5] = mass.shape[0]
@@ -175,15 +174,14 @@ def to_deque(file_in, file_out, min_snr, rt_v, intensity):
                     count.extend(index)
                 else:
                     if frame[i,5]>=number:
-                        peak_list.extend(lc_ms_peak(files[i],width,min_snr,False,intensity))
+                        peak_list.extend(lc_ms_peak(file_in+"/"+files[i],width,min_snr,False,intensity))
             else:
                 if frame[i,5]>=number:
-                    peak_list.extend(lc_ms_peak(files[i],width,min_snr,False,intensity))
+                    peak_list.extend(lc_ms_peak(file_in+"/"+files[i],width,min_snr,False,intensity))
                 
         i+=1
     peak_list = pd.DataFrame(peak_list,columns = ['mz','rt','intensity','rt1','rt2','signal','snr','ind','shape'])
-    os.chdir(file_out)
-    peak_list.to_csv(r'%s/%s.csv' % (file_out,os.path.splitext(os.path.basename(file_in))[0]))
+    peak_list.to_csv('%s/%s.csv' % (file_out,os.path.splitext(os.path.basename(file_in))[0]))
     shutil.rmtree(file_in)
     return peak_list
 
